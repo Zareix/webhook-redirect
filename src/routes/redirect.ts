@@ -36,7 +36,6 @@ router.post(
     res: Response,
     next: NextFunction
   ) => {
-    console.log('test3');
     const webhookResponse = await redirectRequest(req.body);
     if (webhookResponse instanceof RedirectError) {
       next(webhookResponse);
