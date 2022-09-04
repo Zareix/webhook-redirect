@@ -22,6 +22,8 @@ RUN apk add \
 
 RUN npm install -g pnpm
 
+ENV NODE_ENV=production
+
 WORKDIR /app
 COPY ./package.json package.json
 COPY ./pnpm-lock.yaml pnpm-lock.yaml
