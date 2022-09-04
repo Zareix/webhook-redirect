@@ -1,0 +1,27 @@
+{
+    "sub.example.com": {
+        "paths": [
+            {
+                "path": "/api/something",
+                "methods": [
+                    "get",
+                    "post"
+                ]
+            },
+            {
+                "path": "/api/else",
+                "methods": [
+                    "get"
+                ]
+            }
+        ]
+    },
+    "example2.com": {
+        "paths": [
+            {
+                "path": "/api",
+                "methods": "post"
+            }
+        ]
+    }
+}

@@ -1,0 +1,12 @@
+version: '3.7'
+
+services:
+  app:
+    image: ghcr.io/zareix/webhook-redirect
+    container_name: webhook-redirect
+    ports:
+      - 3001:3001
+    environment:
+      - TOKEN=secretToken
+    volumes:
+      - /path/to/authorizedDomains.json:/app/authorizedDomains.json
