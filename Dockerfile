@@ -8,19 +8,16 @@ RUN bun install --frozen-lockfile
 
 COPY . .
 
-RUN TARGET=$(uname -m) && \
-  echo "Building for target: $TARGET" && \
-  bun run build --target=$TARGET
+RUN bun run build
 
 
-FROM oven/bun:1.2.15-slim AS runner
+FROM oven/bun:1.2.15-alpine AS runner
 
 WORKDIR /app
 
-COPY --from=builder /app/webhook-redirect .
-RUN chmod +x webhook-redirect
+COPY --from=builder /app/dist webhook-redirect
 
 EXPOSE 3000
 
-CMD [ "./webhook-redirect" ]
+CMD [ "bun", "run", "./webhook-redirect" ]
 
