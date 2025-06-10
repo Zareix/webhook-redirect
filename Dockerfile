@@ -1,36 +1,26 @@
-# --- BUILD STAGE ---
-FROM nginx:alpine AS build
-
-RUN apk add \
-    nodejs \
-    npm
-
-RUN npm install -g pnpm
-
-COPY ./package.json package.json
-COPY ./pnpm-lock.yaml pnpm-lock.yaml
-RUN pnpm install
-COPY . .
-
-RUN pnpm tsc
-
-# --- APP SETUP STAGE ---
-FROM nginx:alpine
-RUN apk add \
-    nodejs \
-    npm
-
-RUN npm install -g pnpm
-
-ENV NODE_ENV=production
+FROM oven/bun:1.2.15 AS builder
 
 WORKDIR /app
-COPY ./package.json package.json
-COPY ./pnpm-lock.yaml pnpm-lock.yaml
-RUN pnpm install
 
-COPY --from=build /dist /app/dist
+COPY package.json bun.lock ./
 
-EXPOSE 3001
+RUN bun install --frozen-lockfile
 
-CMD ["pnpm", "start"]
+COPY . .
+
+RUN TARGET=$(uname -m) && \
+  echo "Building for target: $TARGET" && \
+  bun run build --target=$TARGET
+
+
+FROM oven/bun:1.2.15-slim AS runner
+
+WORKDIR /app
+
+COPY --from=builder /app/webhook-redirect .
+RUN chmod +x webhook-redirect
+
+EXPOSE 3000
+
+CMD [ "./webhook-redirect" ]
+
