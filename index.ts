@@ -27,17 +27,28 @@ const server = Bun.serve({
         }
 
         console.log(`Forwarding request to: ${dest}`);
+        const headers = new Headers();
+        for (const [key, value] of req.headers) {
+          if (key.toLowerCase().startsWith('x-')) {
+            headers.set(key, value);
+          }
+        }
         const response = await fetch(dest, {
           method: 'POST',
-          headers: req.headers,
+          headers,
           body: req.body,
         });
         if (!response.ok) {
           return Response.json(
-            { error: 'Failed to forward request' },
-            { status: response.status }
+            {
+              status: response.status,
+              error: 'Failed to forward request',
+              data: await response.text(),
+            },
+            { status: 500 }
           );
         }
+
         return Response.json({
           success: true,
         });
