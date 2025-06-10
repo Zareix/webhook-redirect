@@ -50,4 +50,10 @@ const server = Bun.serve({
   },
 });
 
-console.log(`Server running at http://localhost:${server.port}`);
+console.log(
+  `Server running at http://localhost:${
+    server.port
+  }, forwarding requests to authorized destinations only : ${AUTHORIZED_REDIRECTS.join(
+    ', '
+  )}`
+);
