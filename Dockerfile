@@ -1,4 +1,4 @@
-FROM oven/bun:1.2.15 AS builder
+FROM oven/bun:1.2.21-alpine AS builder
 
 WORKDIR /app
 
@@ -11,13 +11,11 @@ COPY . .
 RUN bun run build
 
 
-FROM oven/bun:1.2.15-alpine AS runner
+FROM oven/bun:1.2.21-alpine AS runner
 
-WORKDIR /app
-
-COPY --from=builder /app/dist webhook-redirect
+COPY --from=builder /app/dist/index.js /app/webhook-redirect.js
 
 EXPOSE 3000
 
-CMD [ "bun", "run", "./webhook-redirect" ]
+CMD [ "bun", "run", "/app/webhook-redirect.js" ]
 

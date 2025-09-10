@@ -1,11 +1,16 @@
-const PORT = process.env.PORT || 3000;
-const AUTHORIZED_REDIRECTS = process.env.AUTHORIZED_REDIRECTS?.split(',') || [
+const PORT = process.env.PORT ?? 3000;
+const AUTHORIZED_REDIRECTS = process.env.AUTHORIZED_REDIRECTS?.split(',') ?? [
   'http://localhost:3000',
 ];
 
 const server = Bun.serve({
   port: PORT,
   routes: {
+    '/health': {
+      GET: () => {
+        return Response.json({ status: 'ok' });
+      },
+    },
     '/forward': {
       POST: async (req) => {
         const params = new URL(req.url).searchParams;
@@ -33,25 +38,43 @@ const server = Bun.serve({
             headers.set(key, value);
           }
         }
-        const response = await fetch(dest, {
-          method: 'POST',
-          headers,
-          body: req.body,
-        });
-        if (!response.ok) {
+        try {
+          const response = await fetch(dest, {
+            method: 'POST',
+            headers,
+            body: req.body,
+          });
+          if (!response.ok) {
+            const data = await response.text();
+            console.error(
+              `Failed to forward request: ${response.statusText} | ${data}`
+            );
+            return Response.json(
+              {
+                status: response.status,
+                error: 'Failed to forward request',
+                message: response.statusText,
+                data,
+              },
+              { status: 500 }
+            );
+          }
+
+          return Response.json({
+            success: true,
+          });
+        } catch (error) {
+          const message =
+            error instanceof Error ? error.message : String(error);
+          console.error(`Error forwarding request: ${error} | ${message}`);
           return Response.json(
             {
-              status: response.status,
-              error: 'Failed to forward request',
-              data: await response.text(),
+              error: 'Internal Server Error',
+              message,
             },
             { status: 500 }
           );
         }
-
-        return Response.json({
-          success: true,
-        });
       },
     },
   },

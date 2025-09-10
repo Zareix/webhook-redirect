@@ -2,7 +2,7 @@
   "name": "webhook-redirect",
   "module": "index.ts",
   "type": "module",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "private": true,
   "scripts": {
     "dev": "bun run --watch index.ts",
@@ -12,6 +12,6 @@
     "@types/bun": "latest"
   },
   "peerDependencies": {
-    "typescript": "^5"
+    "typescript": "^5.9.2"
   }
 }
