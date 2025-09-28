@@ -1,4 +1,4 @@
-FROM oven/bun:1.2.22-alpine AS builder
+FROM oven/bun:1.2.23-alpine AS builder
 
 WORKDIR /app
 
@@ -11,7 +11,7 @@ COPY . .
 RUN bun run build
 
 
-FROM oven/bun:1.2.22-alpine AS runner
+FROM oven/bun:1.2.23-alpine AS runner
 
 COPY --from=builder /app/dist/index.js /app/webhook-redirect.js
 
